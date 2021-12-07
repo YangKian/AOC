@@ -1,14 +1,31 @@
-use std::str::Split;
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, collections::HashSet, str::FromStr};
 
-pub fn solution_part_a(nums: &[u64], iter: Split<&str>) {
-    let mut boards: Vec<Board> = iter.map(|s| s.parse().unwrap()).collect();
+pub fn solution_part_a(nums: &[u64], boards: &mut [Board]) {
     for &num in nums.iter() {
         for board in boards.iter_mut() {
             if board.mark_and_validate(num) {
                 let res = board.total_sum * num;
                 println!("res = {}", res);
                 return;
+            }
+        }
+    }
+}
+
+pub fn solution_part_b(nums: &[u64], boards: &mut [Board]) {
+    let size = boards.len();
+    println!("size = {}", size);
+    let mut done: HashSet<usize> = HashSet::new();
+    for &num in nums.iter() {
+        for (idx, board) in boards.iter_mut().enumerate() {
+            if !done.contains(&idx) && board.mark_and_validate(num) {
+                done.insert(idx);
+                println!("{} done.", idx);
+                if done.len() == size {
+                    let res = board.total_sum * num;
+                    println!("res = {}", res);
+                    return;
+                }
             }
         }
     }
@@ -69,7 +86,7 @@ impl FromStr for Board {
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Borrow;
+    use std::borrow::{Borrow, BorrowMut};
     use std::fs::read_to_string;
 
     use super::*;
@@ -84,7 +101,9 @@ mod tests {
             .split(',')
             .map(|c| c.parse().unwrap())
             .collect::<Vec<u64>>();
-        solution_part_a(nums.borrow(), iter);
+        let mut boards: Vec<Board> = iter.map(|s| s.parse().unwrap()).collect();
+        solution_part_a(nums.borrow(), boards.borrow_mut());
+        solution_part_b(nums.borrow(), boards.borrow_mut());
         Ok(())
     }
 }
