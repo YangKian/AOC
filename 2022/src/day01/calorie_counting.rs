@@ -2,7 +2,8 @@ pub fn solution_part_a(lines: &[Option<u64>]) {
     let groups = lines
         .split(|line| line.is_none())
         .map(|group| group.iter().map(|v| v.unwrap()).sum::<u64>())
-        .max().unwrap();
+        .max()
+        .unwrap();
     println!("groups = {groups:?}");
 }
 
